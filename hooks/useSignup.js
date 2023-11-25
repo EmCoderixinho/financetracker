@@ -27,17 +27,24 @@ export const useSignup = () => {
 
       //login
 
-      dispatch({ type: "LOGIN", payload: res.user });
+      if (!isCancelled) {
+        dispatch({ type: "LOGIN", payload: res.user });
 
-      setError(null);
-      setIsPending(false);
-      router.push('/')
+        setError(null);
+        setIsPending(false);
+        router.push("/");
+      }
     } catch (error) {
-      
-      setError(err.message);
-      setIsPending(false);
+      if (!isCancelled) {
+        setError(err.message);
+        setIsPending(false);
+      }
     }
   };
+
+  useEffect(() => {
+    return () => setIsCancelled(true);
+  }, []);
 
   return { error, isPending, signup };
 };

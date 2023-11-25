@@ -16,18 +16,25 @@ export const useLogin = () => {
     try {
       const res = await projectAuth.signInWithEmailAndPassword(email, password);
 
-      if (res.user) {
-        dispatch({ type: "LOGIN", payload: res.user });
-        setIsPending(false);
-        setError(null);
-      } else throw new Error("Could not log in");
+      if (!isCancelled)
+        if (res.user) {
+          dispatch({ type: "LOGIN", payload: res.user });
+          setIsPending(false);
+          setError(null);
+        } else throw new Error("Could not log in");
     } catch (err) {
-      if (err.code === "auth/internal-error")
-        setError("Invalid login credentials");
-      else setError(err.message);
-      setIsPending(false);
+      if (!isCancelled) {
+        if (err.code === "auth/internal-error")
+          setError("Invalid login credentials");
+        else setError(err.message);
+        setIsPending(false);
+      }
     }
   };
+
+  useEffect(() => {
+    return () => setIsCancelled(true);
+  }, []);
 
   return { login, isPending, error };
 };
