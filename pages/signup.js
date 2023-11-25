@@ -1,18 +1,24 @@
 import { useState } from "react";
 import styles from "../styles/signup.module.css";
+import { useSignup } from "../hooks/useSignup";
+import { useRouter } from "next/router";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const { signup, isPending, error } = useSignup();
+  const router = useRouter()
+  const {user} = useAuthContext()
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log(email);
-    console.log(password);
-    console.log(displayName);
+    signup(email, password, displayName);
   };
+
+  if(user) router.push('/')
 
   return (
     <form className={styles["signup-form"]} onSubmit={handleSubmit}>
@@ -41,7 +47,9 @@ export default function Login() {
           value={displayName}
         />
       </label>
-      <button className="btn"> Sign up</button>
+      {!isPending && <button className="btn"> Sign up</button>}
+      {isPending && <button className="btn" disabled>Loading</button>}
+      { error && <p>{error}</p>}
     </form>
   );
 }
