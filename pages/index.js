@@ -9,16 +9,16 @@ export default function Home() {
   const router = useRouter();
   const { user } = useAuthContext();
 
+  const { documents, error } = useCollection(
+    "transactions",
+    ["uid", "==", (user ? user.uid : null)],
+    ["createdAt", "desc"]
+  );
+
   if (!user) {
     router.push("/login");
     return null;
   }
-
-  const { documents, error } = useCollection(
-    "transactions",
-    ["uid", "==", user.uid],
-    ["createdAt", "desc"]
-  );
 
   //console.log(user);
   //console.log(documents);
